@@ -49,7 +49,6 @@ class PayVaultController {
 //        } else {
 //            return ResponseEntity.notFound().build();
 //        }
-
     }
     @PostMapping(path = "/create")
     private ResponseEntity<Void> createPayCard(@RequestBody PayCard newPayCardInfo, UriComponentsBuilder ucb){
