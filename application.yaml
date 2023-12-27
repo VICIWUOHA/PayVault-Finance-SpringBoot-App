@@ -1,0 +1,6 @@
+#spring:
+#  datasource:
+#    driverClassName: org.postgresql.Driver
+#    url: jdbc:postgresql://host:5432/dbname
+#    username: username
+#    password: password
