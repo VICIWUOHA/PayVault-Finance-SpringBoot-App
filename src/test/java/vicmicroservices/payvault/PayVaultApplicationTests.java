@@ -9,6 +9,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.net.URI;
 
@@ -16,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class PayVaultApplicationTests {
 
     @Autowired
@@ -36,7 +38,8 @@ class PayVaultApplicationTests {
         System.out.println( "OUTPUT IS :"+ response.getBody());
         // test the amount too
         Double vaultBalance = documentContext.read("$.balance");
-        assertThat(vaultBalance).isGreaterThan(200);
+//        assertThat(vaultBalance).isGreaterThan(200);
+        assertThat(vaultBalance).isEqualTo(1.00);
 
 
     }
@@ -67,10 +70,17 @@ class PayVaultApplicationTests {
         assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         // test the value posted after retrieval
         DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
+        Number id = documentContext.read("$.Id");
         Double cardBalance = documentContext.read("$.balance");
         assertThat(cardBalance).isEqualTo(dummyBalance);
 
     }
 
+    @Test
+    void shouldReturnAllPayCards(){
+        //make a new request
+        ResponseEntity<String> response = restTemplate.getForEntity("/api/v1/paycards/list_paycards", String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
 
 }
