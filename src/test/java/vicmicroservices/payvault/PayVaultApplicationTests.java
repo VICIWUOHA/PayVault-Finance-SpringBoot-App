@@ -79,7 +79,7 @@ class PayVaultApplicationTests {
     @Test
     void shouldReturnAllPayCards(){
         //make a new request
-        ResponseEntity<String> response = restTemplate.getForEntity("/api/v1/paycards/paycards", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity("/api/v1/paycards/list_paycards", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
