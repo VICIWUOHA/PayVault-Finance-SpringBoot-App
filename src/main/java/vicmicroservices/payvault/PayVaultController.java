@@ -1,11 +1,16 @@
 package vicmicroservices.payvault;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 // In our controller, we can implement routing Logic for endpoints
@@ -16,7 +21,7 @@ class PayVaultController {
     @Autowired
     private final PayVaultRepository payVaultRepository;
 
-     private PayVaultController(PayVaultRepository payVaultRepository) {
+    private PayVaultController(PayVaultRepository payVaultRepository) {
 
         this.payVaultRepository = payVaultRepository;
     }
@@ -50,22 +55,42 @@ class PayVaultController {
 //            return ResponseEntity.notFound().build();
 //        }
     }
+
     @PostMapping(path = "/create")
-    private ResponseEntity<Void> createPayCard(@RequestBody PayCard newPayCardInfo, UriComponentsBuilder ucb){
-         // when requests are sent to the /create endpoint, we save it and return the location
+    private ResponseEntity<Void> createPayCard(@RequestBody PayCard newPayCardInfo, UriComponentsBuilder ucb) {
+        // when requests are sent to the /create endpoint, we save it and return the location
 
         PayCard savedPayCard = payVaultRepository.save(newPayCardInfo);
         URI locationOfSavedPayCard = ucb.path("/api/v1/paycards/{id}")
-                                        .buildAndExpand(savedPayCard.Id())
-                                        .toUri();
+                .buildAndExpand(savedPayCard.Id())
+                .toUri();
         return ResponseEntity.created(locationOfSavedPayCard).build();
-            //to create the URI from a sting use the URI.create method
+        //to create the URI from a sting use the URI.create method
 //        return ResponseEntity.created(URI.create("/paycards/id?")).build();
 
     }
 
-    @GetMapping("")
-    private ResponseEntity<Iterable<PayCard>> getMultiplePayCards(){
-         return ResponseEntity.ok(payVaultRepository.findAll());
+    @GetMapping("/list_paycards")
+    private ResponseEntity<Iterable<PayCard>> findAll() {
+        return ResponseEntity.ok(payVaultRepository.findAll());
     }
+
 }
+
+    // Users should be able to have multiple virtualCards
+//    @GetMapping("/")
+//    private ResponseEntity<List<PayCard>> getMultiplePayCards(Pageable pageable){
+//        Page<PayCard> page = payVaultRepository.findAll(
+//                PageRequest.of(
+//                        pageable.getPageNumber(),
+//                        pageable.getPageSize(),
+//                        pageable.getSortOr(Sort.by(Sort.Direction.DESC, "balance"))));
+//
+//
+//        return ResponseEntity.ok(page.getContent());
+//    }
+
+
+
+
+
