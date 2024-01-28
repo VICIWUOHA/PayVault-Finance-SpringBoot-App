@@ -13,4 +13,20 @@ Controllers in Spring are just similar to controllers in most MVC frameworks. Th
 
 ## Application
 
+
+### Authentication
+Within the Application , we want to be sure that endpoints are accessed only if a user is authenticated and authorized to do so.
+Here is our logic:
+
+- IF the user/customer is authenticated
+
+- ... AND they are authorized as a "PayCard owner"
+
+- ... ... AND they own the requested PayCard
+
+- THEN complete the users's request
+
+- BUT don't allow users to access PayCards they do not own.
+
+
 ## Repository
