@@ -1,4 +1,5 @@
 {
   "Id": 99,
-  "balance": 123.45
+  "balance": 123.45,
+  "customer": "VictorI"
 }

@@ -1,5 +1,5 @@
 [
-  { "Id": 99, "balance": 123.45 },
-  { "Id": 100, "balance": 100.0 },
-  { "Id": 101, "balance": 150.0 }
+  { "Id": 99, "balance": 123.45, "customer": "VictorI" },
+  { "Id": 100, "balance": 100.0, "customer": "VictorI" },
+  { "Id": 101, "balance": 150.0, "customer": "VictorI" }
 ]
