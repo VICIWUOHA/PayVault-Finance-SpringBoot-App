@@ -56,7 +56,7 @@ class PayVaultApplicationTests {
     @Test
     void shouldCreateANewPayCard(){
         Double dummyBalance = 500.4;
-        PayCard payCard = new PayCard(null,dummyBalance);
+        PayCard payCard = new PayCard(null,dummyBalance,"testUser1");
         ResponseEntity<Void> voidResponseEntity = restTemplate.postForEntity("/api/v1/paycards/create",payCard, Void.class);
         // if creation is successful we expect a 201(CREATED) response
         assertThat(voidResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);

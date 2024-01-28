@@ -25,9 +25,9 @@ class PayCardJsonTest {
     @BeforeEach
     void setUp() {
         payCards = Arrays.array(
-                new PayCard(99L, 123.45),
-                new PayCard(100L, 100.00),
-                new PayCard(101L, 150.00));
+                new PayCard(99L, 123.45, "VictorI"),
+                new PayCard(100L, 100.00, "VictorI"),
+                new PayCard(101L, 150.00, "VictorI"));
     }
     @Test
     void cashCardListSerializationTest() throws IOException {
@@ -44,6 +44,8 @@ class PayCardJsonTest {
         assertThat(json.write(payCard)).hasJsonPathNumberValue("@.balance");
         assertThat(json.write(payCard)).extractingJsonPathNumberValue("@.balance")
                 .isEqualTo(123.45);
+        assertThat(json.write(payCard)).extractingJsonPathStringValue("@.customer")
+                .isEqualTo("VictorI");
     }
 
     @Test
@@ -51,11 +53,12 @@ class PayCardJsonTest {
         String expected = """
                 {
                     "Id": 99,
-                    "balance": 123.45
+                    "balance": 123.45,
+                    "customer": "VictorI"
                 }
                 """;
         assertThat(json.parse(expected))
-                .isEqualTo(new PayCard(99L, 123.45));
+                .isEqualTo(new PayCard(99L, 123.45,"VictorI"));
         assertThat(json.parseObject(expected).Id()).isEqualTo(99);
         assertThat(json.parseObject(expected).balance()).isEqualTo(123.45);
     }
