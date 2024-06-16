@@ -27,7 +27,9 @@ class PayVaultApplicationTests {
     @Test
     void shouldReturnAPayCardWhenDataIsSaved(){
 //        get a response entity from the specified url
-        ResponseEntity<String> response = restTemplate.getForEntity("/api/v1/paycards/100",String.class);
+        ResponseEntity<String> response = restTemplate
+                .withBasicAuth("VictorI","123abcxyz")
+                .getForEntity("/api/v1/paycards/100",String.class);
 //        what do we want to assert, that we have a successful http request , there are multiple ways to check this
 //        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
@@ -47,7 +49,9 @@ class PayVaultApplicationTests {
     @Test
     void shouldNotReturnAPayCardWithInvalidId(){
         // we are testing to see that the application Id's are never > 10000
-        ResponseEntity<String> response = restTemplate.getForEntity("/api/v1/paycards/10005",String.class);
+        ResponseEntity<String> response = restTemplate
+                .withBasicAuth("VictorI", "123abcxyz")
+                .getForEntity("/api/v1/paycards/10005", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isBlank();
 
@@ -57,14 +61,18 @@ class PayVaultApplicationTests {
     void shouldCreateANewPayCard(){
         Double dummyBalance = 500.4;
         PayCard payCard = new PayCard(null,dummyBalance,"testUser1");
-        ResponseEntity<Void> voidResponseEntity = restTemplate.postForEntity("/api/v1/paycards/create",payCard, Void.class);
+        ResponseEntity<Void> voidResponseEntity = restTemplate
+                .withBasicAuth("VictorI","123abcxyz")
+                .postForEntity("/api/v1/paycards/create",payCard, Void.class);
         // if creation is successful we expect a 201(CREATED) response
         assertThat(voidResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         // Check the Location URI from the response headers
         URI newPayCardLocation = voidResponseEntity.getHeaders().getLocation();
         // make a get request to that uri
-        ResponseEntity<String> getResponse = restTemplate.getForEntity(newPayCardLocation,String.class);
+        ResponseEntity<String> getResponse = restTemplate
+                .withBasicAuth("VictorI","123abcxyz")
+                .getForEntity(newPayCardLocation,String.class);
         System.out.println(newPayCardLocation);
         System.out.println(getResponse.getBody());
         assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -79,8 +87,31 @@ class PayVaultApplicationTests {
     @Test
     void shouldReturnAllPayCards(){
         //make a new request
-        ResponseEntity<String> response = restTemplate.getForEntity("/api/v1/paycards/list_paycards", String.class);
+        ResponseEntity<String> response = restTemplate
+                .withBasicAuth("VictorI","123abcxyz")
+                .getForEntity("/api/v1/paycards/list_paycards", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+//    test for bad auth
+    @Test
+    void shouldNotReturnAPayCardWhenUsingBadCredentials() {
+        ResponseEntity<String> response = restTemplate
+                .withBasicAuth("unknown-USER", "123abcxyz")
+                .getForEntity("/api/v1/paycards/100", String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+        response = restTemplate
+                .withBasicAuth("VictorI", "BAD-PASSWORD")
+                .getForEntity("/api/v1/paycards/99", String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+    @Test
+    void shouldRejectUsersWhoAreNotCardOwners() {
+        ResponseEntity<String> response = restTemplate
+                .withBasicAuth("stanley-owns-no-cards", "qrs456")
+                .getForEntity("/api/v1/paycards/99", String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
 }
