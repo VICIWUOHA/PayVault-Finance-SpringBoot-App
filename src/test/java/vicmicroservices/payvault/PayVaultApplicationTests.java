@@ -108,6 +108,7 @@ class PayVaultApplicationTests {
     }
     @Test
     void shouldRejectUsersWhoAreNotCardOwners() {
+//        this should enforce RBAC such that if a user doesn't have the PAYCARD-OWNER Role, they should get a 403 forbidden response.
         ResponseEntity<String> response = restTemplate
                 .withBasicAuth("stanley-owns-no-cards", "qrs456")
                 .getForEntity("/api/v1/paycards/99", String.class);

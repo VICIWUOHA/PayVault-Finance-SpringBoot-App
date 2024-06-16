@@ -23,7 +23,7 @@ class SecurityConfig {
 //        a user is authenticated.
         http.authorizeHttpRequests(request -> request
                         .requestMatchers("/api/v1/paycards/**")
-                        .authenticated())
+                        .hasRole("PAYCARD-OWNER"))
                         .csrf(csrf -> csrf.disable())
                         .httpBasic(Customizer.withDefaults());
         return http.build();
@@ -41,13 +41,13 @@ class SecurityConfig {
         UserDetails victor = users
                 .username("VictorI")
                 .password(passwordEncoder.encode("123abcxyz"))
-                .roles() // No roles
+                .roles("PAYCARD-OWNER") // No roles
                 .build();
-        UserDetails stanleyOwnsNoCards = users
+        UserDetails stanleyNoCards = users
                 .username("stanley-owns-no-cards")
                 .password(passwordEncoder.encode("qrs456"))
                 .roles("NON-OWNER") // new role
                 .build();
-        return new InMemoryUserDetailsManager(victor);
+        return new InMemoryUserDetailsManager(victor,stanleyNoCards);
     }
 }
