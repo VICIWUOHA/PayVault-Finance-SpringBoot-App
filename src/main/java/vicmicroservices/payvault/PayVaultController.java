@@ -59,10 +59,10 @@ class PayVaultController {
     }
 
     @PostMapping(path = "/create")
-    private ResponseEntity<Void> createPayCard(@RequestBody PayCard newPayCardInfo, UriComponentsBuilder ucb) {
-        // when requests are sent to the /create endpoint, we save it and return the location
-
-        PayCard savedPayCard = payVaultRepository.save(newPayCardInfo);
+    private ResponseEntity<Void> createPayCard(@RequestBody PayCard newPayCardInfo, UriComponentsBuilder ucb, Principal principal) {
+        // when requests are sent to the /create endpoint, we get the principal who made the request, save it and return the location
+        PayCard customerPayCard = new PayCard(null,newPayCardInfo.balance(),principal.getName());
+        PayCard savedPayCard = payVaultRepository.save(customerPayCard);
         URI locationOfSavedPayCard = ucb.path("/api/v1/paycards/{id}")
                 .buildAndExpand(savedPayCard.id())
                 .toUri();
