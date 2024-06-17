@@ -70,27 +70,21 @@ class PayVaultController {
 
     }
 
+//    @GetMapping("/list_paycards")
+//    private ResponseEntity<Iterable<PayCard>> findAll() {
+//        return ResponseEntity.ok(payVaultRepository.findAll());
+//    }
+
+    // Users should be able to have multiple virtualCards
     @GetMapping("/list_paycards")
-    private ResponseEntity<Iterable<PayCard>> findAll() {
-        return ResponseEntity.ok(payVaultRepository.findAll());
+    private ResponseEntity<List<PayCard>> getAllPayCards(Pageable pageable){
+        Page<PayCard> page = payVaultRepository.findAll(
+                PageRequest.of(
+                        pageable.getPageNumber(),
+                        pageable.getPageSize(),
+                        pageable.getSortOr(Sort.by(Sort.Direction.DESC, "balance")))
+                );
+        return ResponseEntity.ok(page.getContent());
     }
 
 }
-
-    // Users should be able to have multiple virtualCards
-//    @GetMapping("/")
-//    private ResponseEntity<List<PayCard>> getMultiplePayCards(Pageable pageable){
-//        Page<PayCard> page = payVaultRepository.findAll(
-//                PageRequest.of(
-//                        pageable.getPageNumber(),
-//                        pageable.getPageSize(),
-//                        pageable.getSortOr(Sort.by(Sort.Direction.DESC, "balance"))));
-//
-//
-//        return ResponseEntity.ok(page.getContent());
-//    }
-
-
-
-
-
