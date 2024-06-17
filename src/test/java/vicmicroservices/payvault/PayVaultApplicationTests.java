@@ -36,7 +36,7 @@ class PayVaultApplicationTests {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
         // here we parse the response as a JSON object , in this test, responses must not be null in the id fields of the JSON
         DocumentContext documentContext = JsonPath.parse(response.getBody());
-        Number id = documentContext.read("$.Id");
+        Number id = documentContext.read("$.id");
         assertThat(id).isEqualTo(100);
         System.out.println( "OUTPUT IS :"+ response.getBody());
         // test the amount too
@@ -79,7 +79,7 @@ class PayVaultApplicationTests {
         assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         // test the value posted after retrieval
         DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
-        Number id = documentContext.read("$.Id");
+        Number id = documentContext.read("$.id");
         Double cardBalance = documentContext.read("$.balance");
         assertThat(cardBalance).isEqualTo(dummyBalance);
 
@@ -108,7 +108,7 @@ class PayVaultApplicationTests {
         int cashCardCount = documentContext.read("$.length()");
         assertThat(cashCardCount).isEqualTo(3);
 
-        JSONArray ids = documentContext.read("$..Id");
+        JSONArray ids = documentContext.read("$..id");
         assertThat(ids).containsExactlyInAnyOrder(99, 100, 101);
 
         JSONArray balances = documentContext.read("$..balance");
