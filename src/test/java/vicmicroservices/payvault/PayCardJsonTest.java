@@ -38,8 +38,8 @@ class PayCardJsonTest {
     void payCardSerializationTest() throws IOException {
         PayCard payCard = payCards[0];
         assertThat(json.write(payCard)).isStrictlyEqualToJson("single.json");
-        assertThat(json.write(payCard)).hasJsonPathNumberValue("@.Id");
-        assertThat(json.write(payCard)).extractingJsonPathNumberValue("@.Id")
+        assertThat(json.write(payCard)).hasJsonPathNumberValue("@.id");
+        assertThat(json.write(payCard)).extractingJsonPathNumberValue("@.id")
                 .isEqualTo(99);
         assertThat(json.write(payCard)).hasJsonPathNumberValue("@.balance");
         assertThat(json.write(payCard)).extractingJsonPathNumberValue("@.balance")
@@ -52,14 +52,14 @@ class PayCardJsonTest {
     void payCardDeserializationTest() throws IOException {
         String expected = """
                 {
-                    "Id": 99,
+                    "id": 99,
                     "balance": 123.45,
                     "customer": "VictorI"
                 }
                 """;
         assertThat(json.parse(expected))
                 .isEqualTo(new PayCard(99L, 123.45,"VictorI"));
-        assertThat(json.parseObject(expected).Id()).isEqualTo(99);
+        assertThat(json.parseObject(expected).id()).isEqualTo(99);
         assertThat(json.parseObject(expected).balance()).isEqualTo(123.45);
     }
 }
