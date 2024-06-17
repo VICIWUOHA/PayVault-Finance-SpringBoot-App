@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,8 +37,9 @@ class PayVaultController {
 
     //    this is a handler for requests that come to api/v1/paycards/xx
     @GetMapping("/{payCardId}")
-    private ResponseEntity<PayCard> getPayCard(@PathVariable Long payCardId) {
-        Optional<PayCard> optionalPayCard = payVaultRepository.findById(payCardId);
+    private ResponseEntity<PayCard> getPayCard(@PathVariable Long payCardId, Principal principal) {
+        Optional<PayCard> optionalPayCard = Optional
+                        .ofNullable(payVaultRepository.findByIdAndCustomer(payCardId, principal.getName()));
         // Use functional style expression on one line
         return optionalPayCard.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 
@@ -62,7 +64,7 @@ class PayVaultController {
 
         PayCard savedPayCard = payVaultRepository.save(newPayCardInfo);
         URI locationOfSavedPayCard = ucb.path("/api/v1/paycards/{id}")
-                .buildAndExpand(savedPayCard.Id())
+                .buildAndExpand(savedPayCard.id())
                 .toUri();
         return ResponseEntity.created(locationOfSavedPayCard).build();
         //to create the URI from a sting use the URI.create method
@@ -77,8 +79,9 @@ class PayVaultController {
 
     // Users should be able to have multiple virtualCards
     @GetMapping("/list_paycards")
-    private ResponseEntity<List<PayCard>> getAllPayCards(Pageable pageable){
-        Page<PayCard> page = payVaultRepository.findAll(
+    private ResponseEntity<List<PayCard>> getAllPayCards(Pageable pageable, Principal principal){
+        Page<PayCard> page = payVaultRepository.findByCustomer(
+                principal.getName(),
                 PageRequest.of(
                         pageable.getPageNumber(),
                         pageable.getPageSize(),
