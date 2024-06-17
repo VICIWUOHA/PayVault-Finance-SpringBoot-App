@@ -2,6 +2,7 @@ package vicmicroservices.payvault;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import net.minidev.json.JSONArray;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -90,7 +91,28 @@ class PayVaultApplicationTests {
         ResponseEntity<String> response = restTemplate
                 .withBasicAuth("VictorI","123abcxyz")
                 .getForEntity("/api/v1/paycards/list_paycards", String.class);
+        System.out.println(response.getBody());
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+//    Tests for Pagination and Sorting
+
+    @Test
+    void shouldReturnAllCashCardsWhenListIsRequested() {
+        ResponseEntity<String> response = restTemplate
+                .withBasicAuth("VictorI","123abcxyz")
+                .getForEntity("/api/v1/paycards/list_paycards", String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        DocumentContext documentContext = JsonPath.parse(response.getBody());
+        int cashCardCount = documentContext.read("$.length()");
+        assertThat(cashCardCount).isEqualTo(3);
+
+        JSONArray ids = documentContext.read("$..Id");
+        assertThat(ids).containsExactlyInAnyOrder(99, 100, 101);
+
+        JSONArray balances = documentContext.read("$..balance");
+        assertThat(balances).containsExactlyInAnyOrder(123.45, 1.00, 150.00);
     }
 
 //    test for bad auth
@@ -115,4 +137,14 @@ class PayVaultApplicationTests {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
+    @Test
+    void shoulNotAllowUsersAccessPayCardsTheyDoNotOwn(){
+
+        ResponseEntity<String> response = restTemplate
+                .withBasicAuth("VictorI","123abcxyz")
+                .getForEntity("/api/v1/paycards/102",String.class); //102 belongs to Ben
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+
+    }
 }
