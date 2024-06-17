@@ -41,7 +41,7 @@ class SecurityConfig {
         UserDetails victor = users
                 .username("VictorI")
                 .password(passwordEncoder.encode("123abcxyz"))
-                .roles("PAYCARD-OWNER") // No roles
+                .roles("PAYCARD-OWNER") // Owner Role
                 .build();
         UserDetails stanleyNoCards = users
                 .username("stanley-owns-no-cards")
