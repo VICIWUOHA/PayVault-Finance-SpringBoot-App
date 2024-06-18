@@ -10,7 +10,6 @@ import org.springframework.boot.test.json.JacksonTester;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 @JsonTest
 class PayCardJsonTest {
 
@@ -22,6 +21,7 @@ class PayCardJsonTest {
 
     private PayCard[] payCards;
 
+//    this is a setup method to make some dummy data available before each test
     @BeforeEach
     void setUp() {
         payCards = Arrays.array(
