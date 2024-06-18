@@ -5,11 +5,12 @@ import org.springframework.data.domain.PageRequest;
 //import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.stereotype.Repository;
 
 // This Repository handles access to our data persistence layer.
 // it would be injected into our Controller Layer using dependency injection
 // The Long specifies the datatype for our PayCard Id field
-//@Repository
+@Repository
 interface PayVaultRepository extends CrudRepository<PayCard, Long>, PagingAndSortingRepository<PayCard, Long> {
 
 //    @Query("SELECT p FROM pay_card p WHERE p.Id = :id and customer = :customer")
