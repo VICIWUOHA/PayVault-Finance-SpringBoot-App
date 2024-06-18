@@ -1,0 +1,29 @@
+  name: CI Application Build
+  on:
+    push:
+      branches:
+        - main
+    pull_request:
+      branches:
+        - main
+
+  jobs:
+
+    build:
+      name: Build Branch
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+
+        - name: Set Up JDK 17 Env
+          uses: actions/setup-java@v3
+          with:
+            java-version: '17'
+            distribution: 'temurin'
+
+
+        - name: Build Project with Gradle
+#          working-directory: ./working-directory:
+          run: ./gradlew build
