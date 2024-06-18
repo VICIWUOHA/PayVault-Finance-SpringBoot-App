@@ -138,7 +138,7 @@ class PayVaultApplicationTests {
     }
 
     @Test
-    void shoulNotAllowUsersAccessPayCardsTheyDoNotOwn(){
+    void shouldNotAllowUsersAccessPayCardsTheyDoNotOwn(){
 
         ResponseEntity<String> response = restTemplate
                 .withBasicAuth("VictorI","123abcxyz")

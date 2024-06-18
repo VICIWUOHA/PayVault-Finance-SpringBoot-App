@@ -43,11 +43,16 @@ class SecurityConfig {
                 .password(passwordEncoder.encode("123abcxyz"))
                 .roles("PAYCARD-OWNER") // Owner Role
                 .build();
+        UserDetails ben = users
+                .username("BigBen")
+                .password(passwordEncoder.encode("big@ben10"))
+                .roles("PAYCARD-OWNER")
+                .build();
         UserDetails stanleyNoCards = users
                 .username("stanley-owns-no-cards")
                 .password(passwordEncoder.encode("qrs456"))
                 .roles("NON-OWNER") // new role
                 .build();
-        return new InMemoryUserDetailsManager(victor,stanleyNoCards);
+        return new InMemoryUserDetailsManager(victor,stanleyNoCards,ben);
     }
 }
