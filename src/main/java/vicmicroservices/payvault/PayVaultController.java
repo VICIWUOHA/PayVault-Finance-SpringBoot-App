@@ -90,4 +90,22 @@ class PayVaultController {
         return ResponseEntity.ok(page.getContent());
     }
 
+    // Allow Updates on Existing PayCards
+    @PutMapping("/{requestedPayCardId}")
+    private ResponseEntity<Void> putPayCard(@PathVariable Long requestedPayCardId, @RequestBody PayCard payCardUpdate, Principal principal){
+        // find the card by ID and Customer, update its values (in a new PayCard object) and save
+
+        PayCard existingPayCard = payVaultRepository.findByIdAndCustomer(requestedPayCardId, principal.getName());
+        // if we got no response send 404 to client
+        if (existingPayCard!= null) {
+            PayCard updatedPayCard = new PayCard(existingPayCard.id(),payCardUpdate.balance(),principal.getName());
+            payVaultRepository.save(updatedPayCard);
+
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.notFound().build();
+
+    }
+
 }

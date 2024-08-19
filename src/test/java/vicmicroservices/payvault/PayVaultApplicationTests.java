@@ -7,9 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.net.URI;
@@ -144,6 +142,62 @@ class PayVaultApplicationTests {
                 .withBasicAuth("VictorI","123abcxyz")
                 .getForEntity("/api/v1/paycards/102",String.class); //102 belongs to Ben
 
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+
+    }
+
+//    Test for Updating an existing PyCard Using PUT
+
+    @Test
+    @DirtiesContext
+    void shouldUpdateExistingPayCard(){
+
+        PayCard payCardToUpdate = new PayCard(null,109.8,null);
+        HttpEntity<PayCard> request = new HttpEntity<>(payCardToUpdate);
+
+        ResponseEntity<Void> response = restTemplate
+                .withBasicAuth("VictorI","123abcxyz")
+                .exchange("/api/v1/paycards/101", HttpMethod.PUT,request, Void.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        // Make get call again, to confirm that update was successful
+        ResponseEntity<String> getResponse = restTemplate
+                .withBasicAuth("VictorI","123abcxyz")
+                .getForEntity("/api/v1/paycards/101", String.class);
+
+        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
+        Number id = documentContext.read("$.id");
+        Double amount = documentContext.read("$.balance");
+
+        assertThat(id).isEqualTo(101);
+        assertThat(amount).isEqualTo(109.8);
+    }
+
+    @Test
+    void shouldNotUpdateANonExistentPayCard() {
+        PayCard unknownCard = new PayCard(null, 19.99, null);
+        HttpEntity<PayCard> request = new HttpEntity<>(unknownCard);
+        ResponseEntity<Void> response = restTemplate
+                .withBasicAuth("VictorI","123abcxyz")
+                .exchange("/api/v1/paycards/1010", HttpMethod.PUT, request, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+
+    @Test
+    void  shouldNotUpdatePayCardsOwnedByOtherUser(){
+
+        PayCard bensCard = new PayCard(null,299.9,null);
+
+        HttpEntity<PayCard> request = new HttpEntity<>(bensCard);
+
+        // use Victor's AUTH for Ben's PayCard url /102
+        ResponseEntity<Void> response = restTemplate
+                .withBasicAuth("VictorI","123abcxyz")
+                .exchange("/api/v1/paycards/102",HttpMethod.PUT, request, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 
     }
