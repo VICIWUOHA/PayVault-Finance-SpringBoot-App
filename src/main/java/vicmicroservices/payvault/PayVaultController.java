@@ -109,15 +109,13 @@ class PayVaultController {
     @DeleteMapping("/{requestedId}")
     private ResponseEntity<Void> deletePayCard(@PathVariable Long requestedId, Principal principal){
 
-        PayCard payCardtoDelete = findPayCard(requestedId, principal);
-
-        if (payCardtoDelete != null){
-
-            payVaultRepository.delete(payCardtoDelete);
-            return ResponseEntity.noContent().build();
+        if (!payVaultRepository.existsByIdAndCustomer(requestedId, principal.getName())){
+            System.out.println("==>> No PayCard with id: "+ requestedId);
+            return ResponseEntity.notFound().build();
         }
-        System.out.println("No PayCard with id: "+ requestedId);
-        return ResponseEntity.notFound().build();
+        // use deleteById
+        payVaultRepository.deleteById(requestedId);
+        return ResponseEntity.noContent().build();
 
     }
 
