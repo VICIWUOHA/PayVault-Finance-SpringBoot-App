@@ -201,4 +201,40 @@ class PayVaultApplicationTests {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 
     }
+
+    @Test
+    @DirtiesContext // added to avoid changing state of data for other tests.
+    void shouldDeletePayCard(){
+
+        ResponseEntity<Void> response = restTemplate
+                .withBasicAuth("VictorI","123abcxyz")
+                .exchange("/api/v1/paycards/101",HttpMethod.DELETE, null, Void.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        ResponseEntity<String> getResponse = restTemplate
+                .withBasicAuth("VictorI","123abcxyz")
+                .getForEntity("/api/v1/paycards/101",String.class);
+
+        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+
+    }
+
+    @Test
+    @DirtiesContext // added to avoid changing state of data for other tests.
+    void shouldNotDeletePayCardNotOwnedbyUser(){
+
+        ResponseEntity<Void> response = restTemplate
+                .withBasicAuth("VictorI","123abcxyz")
+                .exchange("/api/v1/paycards/102",HttpMethod.DELETE, null, Void.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+
+//        ResponseEntity<String> getResponse = restTemplate
+//                .withBasicAuth("VictorI","123abcxyz")
+//                .getForEntity("/api/v1/paycards/101",String.class);
+//
+//        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+
+    }
 }
