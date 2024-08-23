@@ -18,4 +18,6 @@ interface PayVaultRepository extends CrudRepository<PayCard, Long>, PagingAndSor
     PayCard findByIdAndCustomer(Long id, String customer);
 
     Page<PayCard> findByCustomer(String customer, PageRequest pageRequest);
+
+    boolean existsByIdAndCustomer(Long id, String customer);
 }
