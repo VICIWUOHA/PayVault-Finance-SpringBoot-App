@@ -19,5 +19,6 @@ interface PayVaultRepository extends CrudRepository<PayCard, Long>, PagingAndSor
 
     Page<PayCard> findByCustomer(String customer, PageRequest pageRequest);
 
+    //method Names need to correspond to the Model eg; Customer cannot be User, since our PayCard class has no User atttribute.
     boolean existsByIdAndCustomer(Long id, String customer);
 }
