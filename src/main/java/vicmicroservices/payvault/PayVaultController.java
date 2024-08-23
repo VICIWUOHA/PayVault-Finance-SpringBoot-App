@@ -26,8 +26,6 @@ class PayVaultController {
 
         this.payVaultRepository = payVaultRepository;
     }
-    //    for GET Requests
-
 
 //    @GetMapping("/home")
 //    private ResponseEntity<PayCard> findByIds(@PathVariable Long vaultId){
@@ -35,7 +33,7 @@ class PayVaultController {
 //        return ResponseEntity.ok(payCard);
 //    };
 
-    //    this is a handler for requests that come to api/v1/paycards/xx
+    //    this is a handler for GET requests that come to api/v1/paycards/xx
     @GetMapping("/{payCardId}")
     private ResponseEntity<PayCard> getPayCard(@PathVariable Long payCardId, Principal principal) {
         Optional<PayCard> optionalPayCard = Optional
@@ -95,7 +93,7 @@ class PayVaultController {
     private ResponseEntity<Void> putPayCard(@PathVariable Long requestedPayCardId, @RequestBody PayCard payCardUpdate, Principal principal){
         // find the card by ID and Customer, update its values (in a new PayCard object) and save
 
-        PayCard existingPayCard = payVaultRepository.findByIdAndCustomer(requestedPayCardId, principal.getName());
+        PayCard existingPayCard = findPayCard(requestedPayCardId, principal);
         // if we got no response send 404 to client
         if (existingPayCard!= null) {
             PayCard updatedPayCard = new PayCard(existingPayCard.id(),payCardUpdate.balance(),principal.getName());
@@ -107,5 +105,26 @@ class PayVaultController {
         return ResponseEntity.notFound().build();
 
     }
+
+    @DeleteMapping("/{requestedId}")
+    private ResponseEntity<Void> deletePayCard(@PathVariable Long requestedId, Principal principal){
+
+        PayCard payCardtoDelete = findPayCard(requestedId, principal);
+
+        if (payCardtoDelete != null){
+
+            payVaultRepository.delete(payCardtoDelete);
+            return ResponseEntity.noContent().build();
+        }
+        System.out.println("No PayCard with id: "+ requestedId);
+        return ResponseEntity.notFound().build();
+
+    }
+
+    // Helper method to find payCard with repository.
+    private PayCard findPayCard(Long requestedId, Principal principal){
+        return payVaultRepository.findByIdAndCustomer(requestedId, principal.getName());
+    }
+
 
 }
